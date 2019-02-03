@@ -1,0 +1,23 @@
+package client;
+
+import javax.swing.SwingUtilities;
+import gui.MainFrame;
+
+public class Runner {
+
+  public static void main(String[] args) {
+    // TODO Auto-generated method stub
+    new Thread(new WorkGroupClient()).start();
+    
+    SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        // TODO Auto-generated method stub
+        new MainFrame();
+      }
+      
+    });
+  }
+
+}

@@ -1,0 +1,24 @@
+package client;
+
+import java.awt.EventQueue;
+import gui.M;
+
+
+public class Runner {
+
+  public static void main(String[] args) {
+    // TODO Auto-generated method stub
+    new Thread(new WorkGroupClient()).start();
+    EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        try {
+          M frame = new M();
+          frame.setVisible(true);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
+  }
+
+}

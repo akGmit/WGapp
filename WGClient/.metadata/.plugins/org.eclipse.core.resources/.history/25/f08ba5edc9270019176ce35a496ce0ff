@@ -1,0 +1,43 @@
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.GridBagLayout;
+import javax.swing.JTextField;
+import java.awt.GridBagConstraints;
+
+public class MainFrame extends JFrame {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1306687705594790857L;
+  private JPanel contentPane;
+  private JTextField textField;
+
+  public MainFrame() {
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setBounds(100, 100, 450, 300);
+    contentPane = new JPanel();
+    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+    setContentPane(contentPane);
+    GridBagLayout gbl_contentPane = new GridBagLayout();
+    gbl_contentPane.columnWidths = new int[]{0, 0};
+    gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    gbl_contentPane.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+    gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+    contentPane.setLayout(gbl_contentPane);
+    
+    textField = new JTextField();
+    GridBagConstraints gbc_textField = new GridBagConstraints();
+    gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+    gbc_textField.gridx = 0;
+    gbc_textField.gridy = 8;
+    contentPane.add(textField, gbc_textField);
+    textField.setColumns(10);
+  }
+
+}
