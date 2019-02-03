@@ -1,0 +1,4 @@
+
+public interface MessageListener {
+  void displayMesssage(String msg);
+}

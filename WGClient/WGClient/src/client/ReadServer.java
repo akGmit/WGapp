@@ -8,19 +8,22 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import gui.ChatTextPane;
 
 public class ReadServer implements Runnable {
   
   private ObjectInputStream in;
   private String message;
+  private ChatTextPane chat;
 
   /**
    * ReadServer constructor.
    * 
    * @param in ObjectInputStream type parameter, containing servers input stream.
    */
-  public ReadServer(ObjectInputStream in) {
+  public ReadServer(ObjectInputStream in, ChatTextPane chat) {
     this.in = in;
+    this.chat = chat;
   }
 
   /**
@@ -32,6 +35,7 @@ public class ReadServer implements Runnable {
     do {
       try {
         message = (String) in.readObject();
+        chat.displayMesssage(message);
       } catch (ClassNotFoundException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

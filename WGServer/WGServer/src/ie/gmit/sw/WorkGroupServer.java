@@ -80,7 +80,7 @@ class ClientHandler extends Thread {
   private void sendMessage(String msg) {
     try {
       out.writeObject(msg);
-      out.flush();
+      //out.flush();
     }
     catch(IOException ioException) {
       ioException.printStackTrace();

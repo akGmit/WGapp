@@ -8,8 +8,9 @@ package client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.*;
+import java.net.Socket;
 import java.util.Scanner;
+import gui.ChatTextPane;
 
 public class WorkGroupClient implements Runnable
 {
@@ -47,7 +48,7 @@ public class WorkGroupClient implements Runnable
    * 
    * @param msg Type String representing message to be sent.
    */
-  private void sendMessage(String msg){
+  public void sendMessage(String msg){
     try{
       out.writeObject(msg);
       out.flush();
@@ -62,7 +63,9 @@ public class WorkGroupClient implements Runnable
    * Do while loop for reading from std input and sending to output stream to server.
    */
   public void execute(){
-
+    
+    
+    
     try {
       connection = new Socket(ipaddress,portaddress);
 
@@ -72,8 +75,22 @@ public class WorkGroupClient implements Runnable
       System.out.println("Client Side ready to communicate");
       System.out.println((String)in.readObject());
       sendMessage(nickName);
+      
+      ChatTextPane chat = new ChatTextPane(this);
+      
+      /*SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          try {
+            ChatTextPane frame = new ChatTextPane();
+            frame.setVisible(true);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      });*/
+      new Thread(chat).start();
 
-      new Thread(new ReadServer(in)).start();
+      new Thread(new ReadServer(in, chat)).start();
 
       do {
         message = console.next();
@@ -96,5 +113,11 @@ public class WorkGroupClient implements Runnable
   public void run() {
     Thread.currentThread().setName(nickName);
     execute();
+    
   }
+  
+  public WorkGroupClient getClient() {
+    return this;
+  }
+  
 }
