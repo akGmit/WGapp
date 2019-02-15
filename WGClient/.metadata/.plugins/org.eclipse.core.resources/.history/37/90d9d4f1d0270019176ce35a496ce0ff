@@ -1,8 +1,0 @@
-package gui;
-
-import java.util.EventListener;
-import client.ReadServer;
-
-public interface ReadServerListener extends EventListener {
-  public void readServer(ReadServer event);
-}
