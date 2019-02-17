@@ -2,7 +2,7 @@
 let app = require('express')();
 let server = require('http').Server(app);
 let io = require('socket.io')(server);
-let WorkGroup = require("./WorkGroup").default;
+let WorkGroup = require("./WorkGroup");
 let Client = require("./Client");
 
 //Server listening on port 31337
@@ -54,7 +54,9 @@ io.on('connection', function(socket) {
 			io.to(req.workGroup).emit("newuser", JSON.stringify(client));
 			console.log(JSON.stringify(client));
 			console.log(client.name + " created group " + client.workGroup);
-			
+
+			let workGroupList = Array.from(workGroups.keys());
+			io.emit("get_workgroup_list", JSON.stringify(workGroupList));
 		} else {
 			io.to(socket.id).emit("group_error", JSON.stringify("Group name exists!"));
 			console.log(JSON.stringify("GROUP ERRPR"));
@@ -134,5 +136,16 @@ io.on('connection', function(socket) {
 		io.to(group).emit("userLeft", name);
 		//io.to(group).emit("message". msg);
 	});
+	/**
+	 * Event - "get_workgroup_list". Returns list of all work groups of server.
+	 */
+	socket.on("get_workgroup_list", function(){
+		workGroups.set("Group1", null);
+		workGroups.set("Group2", null);
+		workGroups.set("Group3", null);
+		let workGroupList = Array.from(workGroups.keys());
+		console.log(JSON.stringify(workGroupList));
+		io.to(socket.id).emit("get_workgroup_list", JSON.stringify(workGroupList));
+	})
 
 });

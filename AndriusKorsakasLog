@@ -1,0 +1,33 @@
+Andrius Korsakas project work Log
+
+Week Ending 10/2
+Tasks:
+    1. Collaborate on a project plan.                                                                               DONE
+    2. Research various design and approach possibilities.                                                          DONE
+    3. Implementing and testing of some basic functionalities.                                                      DONE
+    4. Work on current server/client backend skeleton testing various functionalities.(Focus on chat, work group)   DONE
+
+Week notes:
+    Decided to use JavaScript for server implementation. Will be using Node.js server environment. Using Express framework for Node.js and Socket.io API for server functionality.
+    Using Node as server side environment should provide possibility of app versions on different platforms(Mobile).
+    Current idea of design:
+        Server using Socket.IO API responds to various events sent by client app.
+        Client app sends events to server and gets response.
+        Try to implement Observer OO Design pattern in client app.
+=======
+
+Week ending 17/02
+Task:
+    1.  Create server-side User/Client class.                                       DONE
+    2.  Create server-side WorkGroup class.                                         DONE  
+    3.  Implement server responses to client app events sent over Socket.IO API.    DONE
+    4.  Create User/Client class in client app.                                     DONE
+    5.  Create possibly required interfaces for app.                                DONE
+    6.  Create client to server connection and various functions.                   DONE
+    7.  Create client side class to deal with responses from server.                DONE
+    8.  Implement class responsible of sending requests to server.                  DONE
+
+Week notes:
+    Server-Client connection established. Considering adding more functionality for user information.
+    Currently user are stored just as long as connection session lasts, might implement user registration with help of some database.
+=======

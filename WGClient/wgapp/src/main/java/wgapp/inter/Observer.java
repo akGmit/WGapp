@@ -8,7 +8,8 @@ package wgapp.inter;
 public interface Observer {
 	/**
 	 * Method representing some updated state of a observed subject
+	 * @param event String representation of event, useful for Observer object to process update according to event type.
 	 * @param obj Object representing update of a subject
 	 */
-	void update(Object obj);
+	void update(String event, Object obj);
 }

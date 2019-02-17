@@ -52,6 +52,7 @@ public class ConnectionSocket implements Runnable, Subject {
 		failedToCreateGroup();
 		loginError();
 		groupNameError();
+		getWorkGroupList();
 	}
 	/**
 	 * Gets socket which is bound to server.
@@ -74,7 +75,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			@Override
 			public void call(Object... args) {
 				String groupNameError = gson.fromJson((String)args[0], String.class);
-				notifyObserver(groupNameError);
+				notifyObserver("group_erorr", groupNameError);
 			}
 		});
 	}
@@ -85,7 +86,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			@Override
 			public void call(Object... args) {
 				String loginError = gson.fromJson((String)args[0], String.class);
-				notifyObserver(loginError);
+				notifyObserver("login_error", loginError);
 			}
 		});
 	}
@@ -96,7 +97,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			@Override
 			public void call(Object... args) {
 				String errorGroup = gson.fromJson((String)args[0], String.class);
-				notifyObserver(errorGroup);
+				notifyObserver("group_error", errorGroup);
 			}
 		});
 	}
@@ -108,7 +109,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			public void call(Object... args) {
 
 				ArrayList<User> userList = gson.fromJson((String) args[0], new TypeToken<ArrayList<User>>(){}.getType());
-				notifyObserver(userList);
+				notifyObserver(Socket.EVENT_DISCONNECT, userList);
 				/*
 				 * User userDiisconnected = gson.fromJson((String) args[0], User.class);
 				 * notifyObserver(userDiisconnected);
@@ -123,7 +124,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			@Override
 			public void call(Object... args) {
 				ArrayList<User> userList = gson.fromJson((String)args[0], new TypeToken<ArrayList<User>>(){}.getType());
-				notifyObserver(userList);
+				notifyObserver("getuserlist", userList);
 			}
 		});
 	}
@@ -134,7 +135,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			@Override
 			public void call(Object... args) {
 				String message = gson.fromJson((String)args[0], String.class);
-				notifyObserver(message);
+				notifyObserver(Socket.EVENT_MESSAGE, message);
 			}
 		});
 	}
@@ -146,16 +147,27 @@ public class ConnectionSocket implements Runnable, Subject {
 			public void call(Object... args) {
 				User user = gson.fromJson((String) args[0], User.class);
 				System.out.println(user.getName());
-				notifyObserver(user);
+				notifyObserver("newuser", user);
+			}
+		});
+	}
+	
+	private void getWorkGroupList() {
+		ConnectionSocket.socket.on("get_workgroup_list", new Listener() {
+			
+			@Override
+			public void call(Object... args) {
+				ArrayList<String> workGroupList = gson.fromJson((String)args[0], new TypeToken<ArrayList<String>>(){}.getType());
+				notifyObserver("get_workgroup_list", workGroupList);
 			}
 		});
 	}
 
 
 	@Override
-	public void notifyObserver(Object obj) {
+	public void notifyObserver(String event, Object obj) {
 		for(Observer o : observers) {
-			o.update(obj);
+			o.update(event, obj);
 		}
 	}
 
