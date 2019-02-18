@@ -9,7 +9,7 @@ Tasks:
 
 Week notes:
     Decided to use JavaScript for server implementation. Will be using Node.js server environment. Using Express framework for Node.js and Socket.io API for server functionality.
-    Using Node as server side environment should provide possibility of app versions on different platforms(Mobile).
+    Using Node as server side environment should provide possibility of app versions on different platforms(Mobile) in the future.
     Current idea of design:
         Server using Socket.IO API responds to various events sent by client app.
         Client app sends events to server and gets response.
@@ -17,7 +17,7 @@ Week notes:
 =======
 
 Week ending 17/02
-Task:
+Tasks:
     1.  Create server-side User/Client class.                                       DONE
     2.  Create server-side WorkGroup class.                                         DONE  
     3.  Implement server responses to client app events sent over Socket.IO API.    DONE
@@ -43,3 +43,12 @@ Week notes:
         Maybe implement admin rights.?
         Implement invatation to grop by email. ?
 =======
+
+Week ending 24/02
+Tasks:
+    1. Testing server and client side implementations.
+    2. Working on validation of inputs at server and client. (Continous task)
+    3. Improving overall code design and modularity. (Continous task)
+    4. Research and test file sharing technologies.
+    5. Briefly document current project, will be useful for final documentation.s
+
