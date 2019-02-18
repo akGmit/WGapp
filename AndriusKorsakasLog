@@ -30,4 +30,16 @@ Task:
 Week notes:
     Server-Client connection established. Considering adding more functionality for user information.
     Currently user are stored just as long as connection session lasts, might implement user registration with help of some database.
+    Observer OOD pattern proved itself useful and seems to fit right in with functionality of an app.
+    Quick walk-through of current state of an app:
+        Client side:
+            1. User must set his username to be able to continue. (At the moment, all connections are session long)
+            2. After step 1, there is two choices crete or join existing group.
+            3. Join group: provide groups name and correct password.
+            4. Create group: provide group name and password, user whom created the group will be assgned group admin status.(Which currently means nothing)
+            5. Start sending and recieving messages.
+    Ideas for upcoming week:
+        Look into user registration, so users could register and data would be saved at some DB or server.?
+        Maybe implement admin rights.?
+        Implement invatation to grop by email. ?
 =======
