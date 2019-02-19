@@ -50,5 +50,11 @@ Tasks:
     2. Working on validation of inputs at server and client. (Continous task)
     3. Improving overall code design and modularity. (Continous task)
     4. Research and test file sharing technologies.
-    5. Briefly document current project, will be useful for final documentation.s
+    5. Briefly document current project, will be useful for final documentation.
+
+Week notes:
+    Task 3: found promising bridge API to connect node server framework wiht existing Java APIs. Link: https://github.com/joeferner/node-java.
+        Will require to create java API with all the desired file transfer functions and inject it into existing server implementation. Based on brief research it should serve well 
+        with current server and also improve performance since this JVM will be created for executing imported java API functions.
+
 
