@@ -1,65 +1,64 @@
 package wgapp.client;
 
-import com.google.gson.Gson;
 import io.socket.client.Socket;
-import wgapp.inter.Observer;
-import wgapp.client.User;
 /**
  * Class responsible for output to socket bound to server.
- * Various user events are sent to server.
+ * Various user events are sent to server. Custom named event is sent to server with some JSON data if required.
+ * These events are then captured at server side and in turn server sends response or performs some actions at server side.
+ * 
  * @author ak
  *
  */
-public class ConnectionOutput implements Runnable, Observer {
+public class ConnectionOutput implements Runnable{
 	private Socket socket = ConnectionSocket.getSocket();
 	private String idSocket;
-	private Gson gson;
 
 	public ConnectionOutput(User user) {
 		while (!this.socket.connected());
 		this.idSocket = this.socket.id();
 		user.setSocketID(idSocket);
-		gson = new Gson();
 	}
 
 	@Override
 	public void run() {
-
 	}
 	/**
 	 * Method to create group.
 	 * Sending "newgroup" event to server with JSON string as user.
-	 * @param user
+	 * @param user User JSON representation.
 	 */
 	public void createGroup(User user) {
-		System.out.println(user.toJSON());
 		this.socket.emit("newgroup", user.toJSON());
 	}
-
+	/**
+	 * Event - "join_group" sending to server.
+	 * @param user User JSON representation.
+	 */
 	public void joinGroup(User user) {
-		this.socket.emit("joing_group", user.toJSON());
+		this.socket.emit("join_group", user.toJSON());
 	}
-
+	
+	/**
+	 * Event - "getuserlist" sending to server.
+	 * @param user User JSON representation.
+	 */
 	public void getUserList(User user) {
 		this.socket.emit("getuserlist", user.toJSON());
 	}
 
+	/**
+	 * Event - "message" sending to server.
+	 * @param user User JSON representation.
+	 */
 	public void sendMessage(String msg) {
 		this.socket.emit("message", msg);
 	}
 
+	/**
+	 * Event - ""get_workgroup_list"" sending to server.
+	 * @param user User JSON representation.
+	 */
 	public void getWorkGroupList() {
 		this.socket.emit("get_workgroup_list");
-	}
-
-	@Override
-	public void update(String event, Object obj) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void joinGroup(String group) {
-		// TODO Auto-generated method stub
-
 	}
 }

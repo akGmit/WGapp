@@ -1,0 +1,11 @@
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/inter/Observer.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/client/ConnectionSocket.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/gui/UI.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/gui/MainViewController.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/gui/PopUpController.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/client/ConnectionOutput.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/inter/Sendable.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/run/Runner.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/gui/AbstractController.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/inter/Subject.java
+/home/ak/Documents/college/ProfPractice/WGClient/wgapp/src/main/java/wgapp/client/User.java

@@ -3,8 +3,10 @@ package wgapp.client;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter.Listener;
@@ -13,6 +15,13 @@ import wgapp.inter.Subject;
 
 /**
  * Class responsible for initializing connection to server and dealing with server responses.
+ * Requests and events are sent from client app suing ConnectionOutput class methods, server catches the event
+ * and sends response or performs some other actions.
+ * Server responses are dealt with using this class instance.
+ * Using private instance methods and Socket class methods, each event response is registered with a Listener
+ * which listens for server responses and deals with them.
+ * ConnectionSocket class implements Subject interface, which Observer objects can observe and be 
+ * notified about any state changes.
  * 
  * @author ak
  *
@@ -22,7 +31,7 @@ public class ConnectionSocket implements Runnable, Subject {
 	private static Socket socket;
 	private String servAddress = "http://localhost:31337";
 	private Gson gson = new Gson();
-	
+
 	/**
 	 * ConnectionSocket constructor. 
 	 * Takes no parameters. Initializes observers list and binds socket to server address.
@@ -41,18 +50,19 @@ public class ConnectionSocket implements Runnable, Subject {
 		registerServerEvents();
 	}
 	/**
-	 * Method to register various server response events to socket.
-	 * Each 
+	 * Single method to register Listeners on server event responses.
+	 * 
 	 */
 	private void registerServerEvents() {
 		newUser();
 		recieveMessage();
 		getUserList();
-		onDisconnect();
+		//onDisconnect();
 		failedToCreateGroup();
 		loginError();
 		groupNameError();
 		getWorkGroupList();
+		userDisconnect();
 	}
 	/**
 	 * Gets socket which is bound to server.
@@ -62,11 +72,16 @@ public class ConnectionSocket implements Runnable, Subject {
 		return ConnectionSocket.socket;
 	}
 	/**
-	 * Method to connect socket to server.
+	 * Static method initiating connection to server.
 	 */
 	public static void connect() {
 		System.out.println("COnnneect");
 		ConnectionSocket.socket.connect();
+	}
+
+	public static void disconnect() {
+		ConnectionSocket.socket.disconnect();
+		Thread.currentThread().interrupt();
 	}
 
 	private void groupNameError() {
@@ -79,7 +94,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			}
 		});
 	}
-	
+
 	private void loginError() {
 		ConnectionSocket.socket.on("login_error", new Listener() {
 
@@ -90,7 +105,7 @@ public class ConnectionSocket implements Runnable, Subject {
 			}
 		});
 	}
-	
+
 	private void failedToCreateGroup() {
 		ConnectionSocket.socket.on("group_error", new Listener() {
 
@@ -102,22 +117,6 @@ public class ConnectionSocket implements Runnable, Subject {
 		});
 	}
 
-	private void onDisconnect() {
-		ConnectionSocket.socket.on(Socket.EVENT_DISCONNECT, new Listener() {
-
-			@Override
-			public void call(Object... args) {
-
-				ArrayList<User> userList = gson.fromJson((String) args[0], new TypeToken<ArrayList<User>>(){}.getType());
-				notifyObserver(Socket.EVENT_DISCONNECT, userList);
-				/*
-				 * User userDiisconnected = gson.fromJson((String) args[0], User.class);
-				 * notifyObserver(userDiisconnected);
-				 */
-			}
-		});
-	}
-	
 	private void getUserList() {
 		ConnectionSocket.socket.on("getuserlist", new Listener() {
 
@@ -128,33 +127,32 @@ public class ConnectionSocket implements Runnable, Subject {
 			}
 		});
 	}
-	
+
 	private void recieveMessage() {
 		ConnectionSocket.socket.on(Socket.EVENT_MESSAGE, new Listener() {
 
 			@Override
 			public void call(Object... args) {
-				String message = gson.fromJson((String)args[0], String.class);
+				String message = (String)args[0];
 				notifyObserver(Socket.EVENT_MESSAGE, message);
 			}
 		});
 	}
-	
+
 	private void newUser() {
 		ConnectionSocket.socket.on("newuser", new Listener() {
 
 			@Override
 			public void call(Object... args) {
-				User user = gson.fromJson((String) args[0], User.class);
-				System.out.println(user.getName());
-				notifyObserver("newuser", user);
+				ArrayList<User> userList = gson.fromJson((String)args[0], new TypeToken<ArrayList<User>>(){}.getType());
+				notifyObserver("newuser", userList);
 			}
 		});
 	}
-	
+
 	private void getWorkGroupList() {
 		ConnectionSocket.socket.on("get_workgroup_list", new Listener() {
-			
+
 			@Override
 			public void call(Object... args) {
 				ArrayList<String> workGroupList = gson.fromJson((String)args[0], new TypeToken<ArrayList<String>>(){}.getType());
@@ -163,7 +161,22 @@ public class ConnectionSocket implements Runnable, Subject {
 		});
 	}
 
+	private void userDisconnect() {
+		ConnectionSocket.socket.on("user_disconnect", new Listener() {
 
+			@Override
+			public void call(Object... args) {
+				User userDisconnected = gson.fromJson((String)args[0], User.class);
+				notifyObserver("user_disconnect", userDisconnected);
+			}
+		});
+	}
+	
+	/**
+	 * Implementation of Subject interface method.
+	 * @param event String representing event type.
+	 * @param obj Object type object sent to observers.
+	 */
 	@Override
 	public void notifyObserver(String event, Object obj) {
 		for(Observer o : observers) {

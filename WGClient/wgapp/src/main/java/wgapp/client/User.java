@@ -10,45 +10,26 @@ import com.google.gson.Gson;
 import wgapp.inter.Sendable;
 
 public class User implements Sendable{
-  private User user;
+  private static User user = null;
   private String name;
   private String workGroup;
   private boolean isAdmin;
   private String password;
   private String socketID;
 
-  /**
-   * @param name specified name of a user.
-   * @param workGroup name of a work group user is trying to connect or belongs to.
-   * @param isAdmin true - if user is admin of work group, false - if simple user
-   * @param password password of a work group trying to connect to or to which user belongs.
-   * @param socketID a unique server provided connection ID, probably will be used to identify user for server.
-   */
-  private User(String name, String workGroup, Boolean isAdmin, String password, String socketID) {
+  private User() {
     super();
-    this.name = name;
-    this.workGroup = workGroup;
-    this.isAdmin = isAdmin;
-    this.password = password;
-    this.socketID = socketID;
-  }
-  
-  public User() {
   }
   
   public void setUser(String name, String workGroup, Boolean isAdmin, String password, String socketID) {
     this.setUser(name, workGroup, isAdmin, password, socketID);
   }
-  
-  public void setUser() {
-    this.user = new User();
-  }
-  
-  public User getUser() {
-    if(this.user == null) {
-      this.user = new User();
+
+  public static User getUser() {
+    if(User.user == null) {
+      User.user = new User();
     }
-    return this.user;
+    return User.user;
   }
 
   public String getName() {
