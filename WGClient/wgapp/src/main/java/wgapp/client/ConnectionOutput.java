@@ -11,16 +11,15 @@ import io.socket.client.Socket;
  */
 public class ConnectionOutput implements Runnable{
 	private Socket socket = ConnectionSocket.getSocket();
-	private String idSocket;
 
-	public ConnectionOutput(User user) {
+	public ConnectionOutput() {
 		while (!this.socket.connected());
-		this.idSocket = this.socket.id();
-		user.setSocketID(idSocket);
 	}
 
 	@Override
 	public void run() {
+		getWorkGroupList();
+		User.getUser().setSocketID(ConnectionSocket.getSocket().id());
 	}
 	/**
 	 * Method to create group.
@@ -38,14 +37,6 @@ public class ConnectionOutput implements Runnable{
 		this.socket.emit("join_group", user.toJSON());
 	}
 	
-	/**
-	 * Event - "getuserlist" sending to server.
-	 * @param user User JSON representation.
-	 */
-	public void getUserList(User user) {
-		this.socket.emit("getuserlist", user.toJSON());
-	}
-
 	/**
 	 * Event - "message" sending to server.
 	 * @param user User JSON representation.

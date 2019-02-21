@@ -3,8 +3,8 @@ package wgapp.gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
-
 import io.socket.client.Socket;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -32,6 +34,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import wgapp.client.ConnectionOutput;
 import wgapp.client.ConnectionSocket;
@@ -45,7 +48,7 @@ import wgapp.inter.Observer;
  *
  */
 public class MainViewController extends AbstractController implements Initializable, Observer{
-	
+
 	@FXML private VBox mainBox;
 	@FXML private TextField userName;
 	@FXML private TextField workGroupName;
@@ -60,6 +63,7 @@ public class MainViewController extends AbstractController implements Initializa
 	@FXML private Label lblMainUI;
 	@FXML private TextArea txtaChatDisplay;
 	@FXML private Button btnSendMsg;
+	@FXML private MenuItem createGroupMenu;
 
 	private ObservableList<WorkGroupListRow> tblWorkGroupList = FXCollections.observableArrayList();
 	private ObservableList<String> groupUserList = FXCollections.observableArrayList();
@@ -69,27 +73,33 @@ public class MainViewController extends AbstractController implements Initializa
 	private PopUpController popupController;
 	private Thread connectionThread;
 	private Thread outputThread;
+	private boolean isUserCreated = false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		validateClient();
+		initConnection();
 		setMainUIView(true, false);
 		initChatEvents();
-		initConnection();
 		initMainAppEvents();
-		out.getWorkGroupList();
 	}
-	
+
+	private void validateClient() {
+		if(!isUserCreated) {
+			new Alert(AlertType.INFORMATION, "Welcome! Its your first time.\nYou must create user account.").showAndWait();
+			showCreateUserPopUp();
+		}
+	}
+
 	//Method initializing various main app events
 	private void initMainAppEvents() {
 		this.mainUI.getPrimaryStage().setOnCloseRequest(event -> {
 			endConnection();
-			System.out.println("here");
 			this.mainUI.getPrimaryStage().close();
 			this.mainUI.exit();
 		});
 	}
-	
+
 	/**
 	 * Send message method used to delegate message sending to OutputConnection class instance.
 	 * @param message String representation of message
@@ -99,52 +109,48 @@ public class MainViewController extends AbstractController implements Initializa
 			out.sendMessage(this.user.getName() +"> " + message);
 		}
 	}
-	
+
 	//Setting of various chat window events
 	private void initChatEvents() {
 		txtfMessage.setOnKeyPressed(event -> {
 			if(event.getCode() == KeyCode.ENTER){
 				sendMessage(txtfMessage.getText());
+				txtfMessage.setText("");
 			}
 		});
 
 		btnSendMsg.setOnAction((event) -> {
 			sendMessage(txtfMessage.getText());
+			txtfMessage.setText("");
 		});
 	}
-	
+
 	//Initializing connection
 	//Starting server input and outputu threads
 	private void initConnection() {
 		this.connection = new ConnectionSocket();
-		
+
 		this.connection.addObserver(this);
-		
+
 		ConnectionSocket.connect();
-		
-		this.out = new ConnectionOutput(user);
-		
+
+		this.out = new ConnectionOutput();
+
 		connectionThread = new Thread(connection);
 		connectionThread.setName("servConnectionThread");
 		connectionThread.start();
 		outputThread = new Thread(out);
 		outputThread.setName("outToServThread");
 		outputThread.start();
-		
+
 		out.getWorkGroupList();
 	}
-	
+
 	//Close connection method
 	private void endConnection() {
 		ConnectionSocket.disconnect();
 		connectionThread.interrupt();
 		outputThread.interrupt();
-		try {
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -161,8 +167,6 @@ public class MainViewController extends AbstractController implements Initializa
 					for (String s : workGroupList) {
 						tblWorkGroupList.add(new WorkGroupListRow(s));
 					}
-					System.out.println("main update");
-					System.out.println(workGroupList);
 					tblColWorkGroupName.setCellValueFactory(new PropertyValueFactory<>("name"));
 					tblColBtnJoinWorkGroup.setCellValueFactory(new PropertyValueFactory<>("joinButton"));
 					workGroupTable.getColumns().setAll(tblColWorkGroupName, tblColBtnJoinWorkGroup);
@@ -177,21 +181,20 @@ public class MainViewController extends AbstractController implements Initializa
 			for(User u : newUserList) {
 				userNameList.add(u.getName());
 			}
-			System.out.println("Main view");
 			Platform.runLater(new Runnable() {
-
 				@Override
 				public void run() {
 					groupUserList.setAll(userNameList);
 					lstvUsers.setItems(groupUserList);
-				}				
+				}
 			});
 		}
+
 
 		if(event.equalsIgnoreCase(Socket.EVENT_MESSAGE)) {
 			txtaChatDisplay.appendText((String)obj+"\n");
 		}
-		
+
 		if(event.equalsIgnoreCase("user_disconnect")) {
 			User userDisconnected = (User) obj;
 			Platform.runLater(new Runnable() {
@@ -203,117 +206,79 @@ public class MainViewController extends AbstractController implements Initializa
 				}
 			});
 		}
+		
+		if(event.equalsIgnoreCase("error")) {
+			Platform.runLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					new Alert(AlertType.ERROR, (String)obj, ButtonType.OK).showAndWait();
+					
+					setMainUIView(true, false);
+				}
+			});
+			
+		}
 	}
 
 	//Switch between main start UI to tabbed group chat UI
 	private void setMainUIView(boolean startUI, boolean wgUI) {
 		if(startUI && workGroupTable.isVisible()) {
 			mainBox.getChildren().remove(mainWGTabPane);
-		}
-		if(startUI && !workGroupTable.isVisible()) {
+
+		}else if(startUI && !workGroupTable.isVisible()) {
 			mainBox.getChildren().add(workGroupTable);
 			mainBox.getChildren().add(lblMainUI);
-
+			
 			mainBox.getChildren().remove(mainWGTabPane);
-		}
-		if(wgUI) {
+		}else if(wgUI) {
 			mainBox.getChildren().remove(workGroupTable);
 			mainBox.getChildren().remove(lblMainUI);
-
+			createGroupMenu.setDisable(true);
 			mainBox.getChildren().add(mainWGTabPane);
+		}
+	}
+
+	private void setUser(Map<String, String> u) {
+		if(u != null) {
+			User.getUser().setUserData(u);
 		}
 	}
 
 	//POPUP WINDOW METHODS ======================================
 
 	public void showCreateGroupPopUp() {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("CreateGroupPop.fxml"));
-		// initializing the controller
-		popupController = new PopUpController("creategroup");
-		loader.setController(popupController);
-		Parent layout;
-		try {
-			layout = loader.load();
-			Scene scene = new Scene(layout);
-			// this is the popup stage
-			Stage popupStage = new Stage();
-			// now
-			popupController.setStage(popupStage);
-			if(this.mainUI!=null) {
-				popupStage.initOwner(mainUI.getPrimaryStage());
-			}
-			popupStage.initModality(Modality.WINDOW_MODAL);
-			popupStage.setScene(scene);
-			popupStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-			new Alert(AlertType.ERROR, "There was an error trying to load the popup fxml file.").show();
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateGroupPop.fxml"));
+		popupController = new PopUpController(this, loader, "creategroup");
+
+		
+		if(popupController.getResult() != null) {
+			setUser(popupController.getResult());
+			out.createGroup(this.user);
+			setMainUIView(false, true);
 		}
-		this.user.setIsAdmin(true);
-		this.user.setPassword(popupController.getResult().get("wgPassword"));
-		this.user.setWorkGroup(popupController.getResult().get("wgName"));
-
-		out.createGroup(this.user);
-
-		setMainUIView(false, true);
-
 	}
 
 	public void showCreateUserPopUp() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("UserNamePop.fxml"));
-		// initializing the controller
-		popupController = new PopUpController("createuser");
-		loader.setController(popupController);
-		Parent layout;
-		try {
-			layout = loader.load();
-			Scene scene = new Scene(layout);
-			// this is the popup stage
-			Stage popupStage = new Stage();
-			// now
-			popupController.setStage(popupStage);
-			if(this.mainUI!=null) {
-				popupStage.initOwner(mainUI.getPrimaryStage());
-			}
-			popupStage.initModality(Modality.WINDOW_MODAL);
-			popupStage.setScene(scene);
-			popupStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-			new Alert(AlertType.ERROR, "There was an error trying to load the popup fxml file.").show();
+		popupController = new PopUpController(this, loader, "createuser");
+
+		if(popupController.getResult() != null) {
+
+			setUser(popupController.getResult());
 		}
-		this.user.setName(popupController.getResult().get("username"));
 	}
 
 	private void showEnterWGPasswordPop() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("PasswordPop.fxml"));
-		// initializing the controller
-		popupController = new PopUpController("password");
-		loader.setController(popupController);
-		Parent layout;
-		try {
-			layout = loader.load();
-			Scene scene = new Scene(layout);
-			// this is the popup stage
-			Stage popupStage = new Stage();
-			// now
-			popupController.setStage(popupStage);
-			if(this.mainUI!=null) {
-				popupStage.initOwner(mainUI.getPrimaryStage());
-			}
-			popupStage.initModality(Modality.WINDOW_MODAL);
-			popupStage.setScene(scene);
-			popupStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-			new Alert(AlertType.ERROR, "There was an error trying to load the popup fxml file.").show();
+		popupController = new PopUpController(this, loader, "password");
+		if(popupController.getResult() != null) {
+			setUser(popupController.getResult());
+			setMainUIView(false, true);
 		}
-		this.user.setPassword(popupController.getResult().get("password"));
-
-		setMainUIView(false, true);
 	}
 
 	/**
@@ -336,7 +301,7 @@ public class MainViewController extends AbstractController implements Initializa
 			});
 		}
 	}
-	
+
 	/**
 	 * Inner class representing individual row in main starting UI Table of work groups.
 	 * 

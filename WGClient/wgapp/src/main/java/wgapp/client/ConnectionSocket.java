@@ -29,7 +29,7 @@ import wgapp.inter.Subject;
 public class ConnectionSocket implements Runnable, Subject {
 	private List<Observer> observers;
 	private static Socket socket;
-	private String servAddress = "http://localhost:31337";
+	private final String servAddress = "http://localhost:31337";
 	private Gson gson = new Gson();
 
 	/**
@@ -42,6 +42,8 @@ public class ConnectionSocket implements Runnable, Subject {
 			ConnectionSocket.socket = IO.socket(servAddress);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
+		}finally {
+			
 		}
 	}
 
@@ -56,13 +58,10 @@ public class ConnectionSocket implements Runnable, Subject {
 	private void registerServerEvents() {
 		newUser();
 		recieveMessage();
-		getUserList();
-		//onDisconnect();
-		failedToCreateGroup();
-		loginError();
-		groupNameError();
+		adminSet();
 		getWorkGroupList();
 		userDisconnect();
+		errorResponse();
 	}
 	/**
 	 * Gets socket which is bound to server.
@@ -81,49 +80,25 @@ public class ConnectionSocket implements Runnable, Subject {
 
 	public static void disconnect() {
 		ConnectionSocket.socket.disconnect();
-		Thread.currentThread().interrupt();
 	}
-
-	private void groupNameError() {
-		ConnectionSocket.socket.on("group_erorr", new Listener() {
-
+	
+	private void adminSet() {
+		ConnectionSocket.socket.on("admin", new Listener() {
+			
 			@Override
 			public void call(Object... args) {
-				String groupNameError = gson.fromJson((String)args[0], String.class);
-				notifyObserver("group_erorr", groupNameError);
+				User.getUser().setIsAdmin(true);
 			}
 		});
 	}
 
-	private void loginError() {
-		ConnectionSocket.socket.on("login_error", new Listener() {
-
+	private void errorResponse() {
+		ConnectionSocket.socket.on("error_msg", new Listener() {
+			
 			@Override
 			public void call(Object... args) {
-				String loginError = gson.fromJson((String)args[0], String.class);
-				notifyObserver("login_error", loginError);
-			}
-		});
-	}
-
-	private void failedToCreateGroup() {
-		ConnectionSocket.socket.on("group_error", new Listener() {
-
-			@Override
-			public void call(Object... args) {
-				String errorGroup = gson.fromJson((String)args[0], String.class);
-				notifyObserver("group_error", errorGroup);
-			}
-		});
-	}
-
-	private void getUserList() {
-		ConnectionSocket.socket.on("getuserlist", new Listener() {
-
-			@Override
-			public void call(Object... args) {
-				ArrayList<User> userList = gson.fromJson((String)args[0], new TypeToken<ArrayList<User>>(){}.getType());
-				notifyObserver("getuserlist", userList);
+				String errorMsg = (String)args[0];
+				notifyObserver("error", errorMsg);
 			}
 		});
 	}
