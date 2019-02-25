@@ -1,10 +1,10 @@
 package wgapp.gui;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
+
 import io.socket.client.Socket;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,13 +14,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -33,9 +30,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
 import wgapp.client.ConnectionOutput;
 import wgapp.client.ConnectionSocket;
 import wgapp.client.User;
@@ -79,7 +73,8 @@ public class MainViewController extends AbstractController implements Initializa
 	public void initialize(URL location, ResourceBundle resources) {
 		validateClient();
 		initConnection();
-		setMainUIView(true, false);
+		showMainStartUI();
+		//setMainUIView(true, false);
 		initChatEvents();
 		initMainAppEvents();
 	}
@@ -213,28 +208,27 @@ public class MainViewController extends AbstractController implements Initializa
 				@Override
 				public void run() {
 					new Alert(AlertType.ERROR, (String)obj, ButtonType.OK).showAndWait();
-					
-					setMainUIView(true, false);
+					showMainStartUI();
 				}
 			});
 			
 		}
 	}
 
-	//Switch between main start UI to tabbed group chat UI
-	private void setMainUIView(boolean startUI, boolean wgUI) {
-		if(startUI && workGroupTable.isVisible()) {
-			mainBox.getChildren().remove(mainWGTabPane);
-
-		}else if(startUI && !workGroupTable.isVisible()) {
-			mainBox.getChildren().add(workGroupTable);
+	//Show main start UI	
+	private void showMainStartUI() {
+		mainBox.getChildren().remove(mainWGTabPane);
+		if(!mainBox.getChildren().contains(lblMainUI) && !mainBox.getChildren().contains(workGroupTable)) {
 			mainBox.getChildren().add(lblMainUI);
-			
-			mainBox.getChildren().remove(mainWGTabPane);
-		}else if(wgUI) {
-			mainBox.getChildren().remove(workGroupTable);
-			mainBox.getChildren().remove(lblMainUI);
-			createGroupMenu.setDisable(true);
+			mainBox.getChildren().add(workGroupTable);
+		}
+	}
+	//Show main group chat UI and disable create group menu button
+	private void showMainGroupUI() {
+		mainBox.getChildren().remove(lblMainUI);
+		mainBox.getChildren().remove(workGroupTable);
+		createGroupMenu.setDisable(true);
+		if(!mainBox.getChildren().contains(mainWGTabPane)) {
 			mainBox.getChildren().add(mainWGTabPane);
 		}
 	}
@@ -248,15 +242,13 @@ public class MainViewController extends AbstractController implements Initializa
 	//POPUP WINDOW METHODS ======================================
 
 	public void showCreateGroupPopUp() {
-
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateGroupPop.fxml"));
 		popupController = new PopUpController(this, loader, "creategroup");
 
-		
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
 			out.createGroup(this.user);
-			setMainUIView(false, true);
+			showMainGroupUI();
 		}
 	}
 
@@ -266,7 +258,6 @@ public class MainViewController extends AbstractController implements Initializa
 		popupController = new PopUpController(this, loader, "createuser");
 
 		if(popupController.getResult() != null) {
-
 			setUser(popupController.getResult());
 		}
 	}
@@ -275,9 +266,10 @@ public class MainViewController extends AbstractController implements Initializa
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("PasswordPop.fxml"));
 		popupController = new PopUpController(this, loader, "password");
+		
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
-			setMainUIView(false, true);
+			showMainGroupUI();
 		}
 	}
 

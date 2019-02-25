@@ -46,11 +46,11 @@ Week notes:
 
 Week ending 24/02
 Tasks:
-    1. Testing server and client side implementations.
-    2. Working on validation of inputs at server and client. (Continous task)
-    3. Improving overall code design and modularity. (Continous task)
-    4. Research and test file sharing technologies.
-    5. Briefly document current project, will be useful for final documentation.
+    1. Testing server and client side implementations.                              DONE
+    2. Working on validation of inputs at server and client. (Continous task)       DONE
+    3. Improving overall code design and modularity. (Continous task)               DONE
+    4. Research and test file sharing technologies.                                 DONE    
+    5. Briefly document current project, will be useful for final documentation.    DONE
 
 Week notes:
     Task 3: found promising bridge API to connect node server framework wiht existing Java APIs. Link: https://github.com/joeferner/node-java.
@@ -61,6 +61,15 @@ Week notes:
         ----Need to work out better implementation of setMainUIView method in MainViewController class.
         ----Maybe make PopUpController implement Observer interface so that any error events could be dealt without closing the popup.
         ----Implement user registration, not just single session user
-        
+=======
+
+Week ending 03/03
+Tasks:
+    1. Implement user registration:
+            -set up MongoDB for user data storage
+            -set up server side user reg functionality
+            -set up client side user reg func and validation
+    2. Abstract Observer method implementation from MainViewController to improve readability
+    3. Create special class to hold static event values.         
 
 
