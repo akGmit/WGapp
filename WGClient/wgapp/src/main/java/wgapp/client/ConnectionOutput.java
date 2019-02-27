@@ -21,20 +21,29 @@ public class ConnectionOutput implements Runnable{
 		getWorkGroupList();
 		User.getUser().setSocketID(ConnectionSocket.getSocket().id());
 	}
+	
+	public void logIn(User user) {
+		System.out.println(user.toJSON());
+		this.socket.emit(Events.LOG_IN, user.toJSON());
+	}
+	
+	public void createNewUser(User user) {
+		this.socket.emit(Events.NEW_USER, user.toJSON());
+	}
 	/**
 	 * Method to create group.
 	 * Sending "newgroup" event to server with JSON string as user.
 	 * @param user User JSON representation.
 	 */
 	public void createGroup(User user) {
-		this.socket.emit("newgroup", user.toJSON());
+		this.socket.emit(Events.NEW_GROUP, user.toJSON());
 	}
 	/**
 	 * Event - "join_group" sending to server.
 	 * @param user User JSON representation.
 	 */
 	public void joinGroup(User user) {
-		this.socket.emit("join_group", user.toJSON());
+		this.socket.emit(Events.JOIN_GROUP, user.toJSON());
 	}
 	
 	/**
@@ -50,6 +59,6 @@ public class ConnectionOutput implements Runnable{
 	 * @param user User JSON representation.
 	 */
 	public void getWorkGroupList() {
-		this.socket.emit("get_workgroup_list");
+		this.socket.emit(Events.WORKGROUP_LIST);
 	}
 }

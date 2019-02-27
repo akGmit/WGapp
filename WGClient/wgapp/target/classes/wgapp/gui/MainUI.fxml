@@ -32,17 +32,20 @@
 	<children>
 		<MenuBar fx:id="menuBar">
 			<menus>
-				<Menu mnemonicParsing="false" text="File">
+				<Menu mnemonicParsing="false" text="User">
 					<items>
+						<MenuItem fx:id="loginMenu" mnemonicParsing="false"
+							text="Log in..." onAction="#showLoginPopUp" />
 						<MenuItem fx:id="createUserMenu" mnemonicParsing="false"
-							text="Create user..." onAction="#showCreateUserPopUp" />
-						<MenuItem fx:id="createGroupMenu" mnemonicParsing="false"
-							text="Create new group.." onAction="#showCreateGroupPopUp" />
+							text="Create new user..." onAction="#showCreateUserPopUp" />
 					</items>
 				</Menu>
-				<Menu mnemonicParsing="false" text="Edit">
+				<Menu mnemonicParsing="false" text="Group">
 					<items>
-						<MenuItem mnemonicParsing="false" text="Delete" />
+						<MenuItem fx:id="createGroupMenu" mnemonicParsing="false"
+							text="Create new group.." onAction="#showCreateGroupPopUp" />
+						<MenuItem fx:id="leaveGroupMenu" mnemonicParsing="false"
+							text="Leave group" onAction="#groupLeave" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="Help">
@@ -52,8 +55,8 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-		<Label fx:id="lblMainUI" text="Available work groups:" textFill="#5b1515"
-			textOverrun="CLIP">
+		<Label fx:id="lblMainUI" text="Available work groups:"
+			textFill="#5b1515" textOverrun="CLIP">
 			<VBox.margin>
 				<Insets bottom="10.0" left="10.0" top="10.0" />
 			</VBox.margin>
@@ -83,20 +86,22 @@
 								<BorderPane prefHeight="200.0" prefWidth="200.0"
 									VBox.vgrow="ALWAYS">
 									<right>
-										<ListView fx:id="lstvUsers" prefHeight="200.0" prefWidth="100.0"
-											BorderPane.alignment="CENTER" />
+										<ListView fx:id="lstvUsers" prefHeight="200.0"
+											prefWidth="100.0" BorderPane.alignment="CENTER" />
 									</right>
 									<center>
-										<TextArea fx:id="txtaChatDisplay" prefHeight="200.0" prefWidth="200.0"
-											BorderPane.alignment="CENTER" editable="false"/>
+										<TextArea fx:id="txtaChatDisplay" prefHeight="200.0"
+											prefWidth="200.0" BorderPane.alignment="CENTER"
+											editable="false" />
 									</center>
 									<bottom>
 										<HBox prefHeight="25.0" prefWidth="423.0"
 											BorderPane.alignment="CENTER">
 											<children>
-												<TextField fx:id="txtfMessage" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-												<Button fx:id="btnSendMsg" mnemonicParsing="false" prefWidth="100.0"
-													text="Send"/>
+												<TextField fx:id="txtfMessage" prefWidth="200.0"
+													HBox.hgrow="ALWAYS" />
+												<Button fx:id="btnSendMsg" mnemonicParsing="false"
+													prefWidth="100.0" text="Send" />
 											</children>
 										</HBox>
 									</bottom>

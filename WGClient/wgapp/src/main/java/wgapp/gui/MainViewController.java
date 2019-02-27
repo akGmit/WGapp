@@ -32,6 +32,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import wgapp.client.ConnectionOutput;
 import wgapp.client.ConnectionSocket;
+import wgapp.client.Events;
 import wgapp.client.User;
 import wgapp.inter.Observer;
 /**
@@ -58,6 +59,8 @@ public class MainViewController extends AbstractController implements Initializa
 	@FXML private TextArea txtaChatDisplay;
 	@FXML private Button btnSendMsg;
 	@FXML private MenuItem createGroupMenu;
+	@FXML private MenuItem leaveGroupMenu;
+	@FXML private MenuItem loginMenu;
 
 	private ObservableList<WorkGroupListRow> tblWorkGroupList = FXCollections.observableArrayList();
 	private ObservableList<String> groupUserList = FXCollections.observableArrayList();
@@ -67,22 +70,23 @@ public class MainViewController extends AbstractController implements Initializa
 	private PopUpController popupController;
 	private Thread connectionThread;
 	private Thread outputThread;
-	private boolean isUserCreated = false;
+	private boolean isUserValid = false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		validateClient();
 		initConnection();
 		showMainStartUI();
-		//setMainUIView(true, false);
 		initChatEvents();
 		initMainAppEvents();
 	}
-
+	//Validate client 
 	private void validateClient() {
-		if(!isUserCreated) {
-			new Alert(AlertType.INFORMATION, "Welcome! Its your first time.\nYou must create user account.").showAndWait();
-			showCreateUserPopUp();
+		if(!isUserValid) {
+			workGroupTable.setDisable(true);
+			lblMainUI.setText("Login or create new user to access work groups.");
+			createGroupMenu.setDisable(true);
+			leaveGroupMenu.setDisable(true);
 		}
 	}
 
@@ -147,6 +151,10 @@ public class MainViewController extends AbstractController implements Initializa
 		connectionThread.interrupt();
 		outputThread.interrupt();
 	}
+	
+	public void groupLeave() {
+		
+	}
 
 	/**
 	 * Observer interface update() method implementation.
@@ -154,7 +162,7 @@ public class MainViewController extends AbstractController implements Initializa
 	 */
 	@Override
 	public void update(String event, Object obj) {
-		if(event.equalsIgnoreCase("get_workgroup_list")) {
+		if(event.equalsIgnoreCase(Events.WORKGROUP_LIST)) {
 			Platform.runLater( new Runnable() {
 				public void run() {
 					ArrayList<String> workGroupList = (ArrayList<String>) obj;
@@ -170,7 +178,7 @@ public class MainViewController extends AbstractController implements Initializa
 			});
 		}
 
-		if(event.equalsIgnoreCase("newuser")) {
+		if(event.equalsIgnoreCase(Events.USER_JOIN)) {
 			ArrayList<User> newUserList = (ArrayList<User>) obj;
 			ArrayList<String> userNameList = new ArrayList<>();
 			for(User u : newUserList) {
@@ -183,6 +191,52 @@ public class MainViewController extends AbstractController implements Initializa
 					lstvUsers.setItems(groupUserList);
 				}
 			});
+			createGroupMenu.setDisable(true);
+			leaveGroupMenu.setDisable(false);
+		}
+
+		if(event.equalsIgnoreCase(Events.LOG_IN)) {
+			boolean isValid = (Boolean) obj;
+			if(isValid) {
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						new Alert(AlertType.INFORMATION, "Log in succesful!", ButtonType.OK).showAndWait();
+						workGroupTable.setDisable(false);
+						lblMainUI.setText("Available work groups list:");
+					}
+				});
+				isUserValid = true;
+				createGroupMenu.setDisable(false);
+				loginMenu.setDisable(true);
+				this.user.setPassword("");
+				showMainStartUI();
+			}else {
+				validateClient();
+			}
+		}
+
+		if(event.equalsIgnoreCase(Events.NEW_USER)) {
+			boolean isValid = (Boolean) obj;
+			if(isValid) {
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						new Alert(AlertType.INFORMATION, "User account created.", ButtonType.OK).showAndWait();
+						workGroupTable.setDisable(false);
+						lblMainUI.setText("Available work groups list:");
+					}
+				});
+				isUserValid = true;
+				createGroupMenu.setDisable(false);
+				loginMenu.setDisable(true);
+				this.user.setPassword("");
+				showMainStartUI();
+			}else {
+				validateClient();
+			}
 		}
 
 
@@ -190,7 +244,7 @@ public class MainViewController extends AbstractController implements Initializa
 			txtaChatDisplay.appendText((String)obj+"\n");
 		}
 
-		if(event.equalsIgnoreCase("user_disconnect")) {
+		if(event.equalsIgnoreCase(Events.USER_DISCONNECT)) {
 			User userDisconnected = (User) obj;
 			Platform.runLater(new Runnable() {
 
@@ -201,17 +255,17 @@ public class MainViewController extends AbstractController implements Initializa
 				}
 			});
 		}
-		
-		if(event.equalsIgnoreCase("error")) {
+
+		if(event.equalsIgnoreCase(Events.ERROR_MSG)) {
 			Platform.runLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					new Alert(AlertType.ERROR, (String)obj, ButtonType.OK).showAndWait();
 					showMainStartUI();
 				}
 			});
-			
+
 		}
 	}
 
@@ -241,9 +295,20 @@ public class MainViewController extends AbstractController implements Initializa
 
 	//POPUP WINDOW METHODS ======================================
 
+	public void showLoginPopUp() {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("LogInPopUp.fxml"));
+		popupController = new PopUpController(this, loader, Events.LOG_IN);
+
+		if(popupController.getResult() != null) {
+			setUser(popupController.getResult());
+			out.logIn(this.user);
+		}
+	}
+
 	public void showCreateGroupPopUp() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateGroupPop.fxml"));
-		popupController = new PopUpController(this, loader, "creategroup");
+		popupController = new PopUpController(this, loader, Events.NEW_GROUP);
 
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
@@ -254,24 +319,27 @@ public class MainViewController extends AbstractController implements Initializa
 
 	public void showCreateUserPopUp() {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("UserNamePop.fxml"));
-		popupController = new PopUpController(this, loader, "createuser");
+		loader.setLocation(getClass().getResource("CreateUserPopUp.fxml"));
+		popupController = new PopUpController(this, loader, Events.CREATE_USER);
 
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
+			out.createNewUser(this.user);
 		}
 	}
 
 	private void showEnterWGPasswordPop() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("PasswordPop.fxml"));
-		popupController = new PopUpController(this, loader, "password");
-		
+		popupController = new PopUpController(this, loader, Events.JOIN_WORKGROUP);
+
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
 			showMainGroupUI();
 		}
 	}
+
+
 
 	/**
 	 * Inner class JoinButton extending Button.

@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.PasswordField?>
 
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity"
@@ -33,18 +34,14 @@
 					vgrow="SOMETIMES" />
 				<RowConstraints minHeight="10.0" prefHeight="30.0"
 					vgrow="SOMETIMES" />
-				<RowConstraints minHeight="10.0" prefHeight="30.0"
-					vgrow="SOMETIMES" />
 			</rowConstraints>
 			<children>
 				<Label text="Name:" />
 				<Label text="Password:" GridPane.rowIndex="1" />
-				<Label text="Description:" GridPane.rowIndex="2" />
+
 				<TextField fx:id="wgName" GridPane.columnIndex="1" />
-				<TextField fx:id="wgPassword" GridPane.columnIndex="1"
+				<PasswordField fx:id="password" GridPane.columnIndex="1"
 					GridPane.rowIndex="1" />
-				<TextField fx:id="wgDescription" GridPane.columnIndex="1"
-					GridPane.rowIndex="2" />
 			</children>
 			<VBox.margin>
 				<Insets left="30.0" right="30.0" />
@@ -53,10 +50,10 @@
 		<HBox alignment="CENTER" prefHeight="50.0" prefWidth="384.0"
 			spacing="15.0">
 			<children>
-				<Button fx:id="wgCreate" mnemonicParsing="false"
+				<Button fx:id="btnOK" mnemonicParsing="false"
 					text="Create"
-					disable="${wgName.text.empty || wgPassword.text.empty}" />
-				<Button fx:id="wgCancel" mnemonicParsing="false"
+					disable="${wgName.text.empty || password.text.empty}" />
+				<Button fx:id="btnCancel" mnemonicParsing="false"
 					cancelButton="true" text="Cancel" />
 			</children>
 		</HBox>

@@ -43,7 +43,7 @@ public class ConnectionSocket implements Runnable, Subject {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}finally {
-			
+
 		}
 	}
 
@@ -57,6 +57,8 @@ public class ConnectionSocket implements Runnable, Subject {
 	 */
 	private void registerServerEvents() {
 		newUser();
+		logIn();
+		userJoin();
 		recieveMessage();
 		adminSet();
 		getWorkGroupList();
@@ -81,10 +83,10 @@ public class ConnectionSocket implements Runnable, Subject {
 	public static void disconnect() {
 		ConnectionSocket.socket.disconnect();
 	}
-	
+
 	private void adminSet() {
-		ConnectionSocket.socket.on("admin", new Listener() {
-			
+		ConnectionSocket.socket.on(Events.SET_ADMIN, new Listener() {
+
 			@Override
 			public void call(Object... args) {
 				User.getUser().setIsAdmin(true);
@@ -93,12 +95,12 @@ public class ConnectionSocket implements Runnable, Subject {
 	}
 
 	private void errorResponse() {
-		ConnectionSocket.socket.on("error_msg", new Listener() {
-			
+		ConnectionSocket.socket.on(Events.ERROR_MSG, new Listener() {
+
 			@Override
 			public void call(Object... args) {
 				String errorMsg = (String)args[0];
-				notifyObserver("error", errorMsg);
+				notifyObserver(Events.ERROR_MSG, errorMsg);
 			}
 		});
 	}
@@ -114,39 +116,59 @@ public class ConnectionSocket implements Runnable, Subject {
 		});
 	}
 
+	private void logIn() {
+		ConnectionSocket.socket.on(Events.LOG_IN, new Listener() {
+
+			@Override
+			public void call(Object... args) {
+				notifyObserver(Events.LOG_IN, args[0]);
+			}
+		});
+	}
+
 	private void newUser() {
-		ConnectionSocket.socket.on("newuser", new Listener() {
+		ConnectionSocket.socket.on(Events.NEW_USER, new Listener() {
+
+			@Override
+			public void call(Object... args) {
+				notifyObserver(Events.NEW_USER, args[0]);
+			}
+		});
+	}
+
+	private void userJoin() {
+		ConnectionSocket.socket.on(Events.USER_JOIN, new Listener() {
 
 			@Override
 			public void call(Object... args) {
 				ArrayList<User> userList = gson.fromJson((String)args[0], new TypeToken<ArrayList<User>>(){}.getType());
-				notifyObserver("newuser", userList);
+				notifyObserver(Events.USER_JOIN, userList);
 			}
 		});
 	}
 
 	private void getWorkGroupList() {
-		ConnectionSocket.socket.on("get_workgroup_list", new Listener() {
+		ConnectionSocket.socket.on(Events.WORKGROUP_LIST, new Listener() {
 
 			@Override
 			public void call(Object... args) {
 				ArrayList<String> workGroupList = gson.fromJson((String)args[0], new TypeToken<ArrayList<String>>(){}.getType());
-				notifyObserver("get_workgroup_list", workGroupList);
+				notifyObserver(Events.WORKGROUP_LIST, workGroupList);
 			}
 		});
 	}
 
 	private void userDisconnect() {
-		ConnectionSocket.socket.on("user_disconnect", new Listener() {
+		ConnectionSocket.socket.on(Events.USER_DISCONNECT, new Listener() {
 
 			@Override
 			public void call(Object... args) {
 				User userDisconnected = gson.fromJson((String)args[0], User.class);
-				notifyObserver("user_disconnect", userDisconnected);
+				notifyObserver(Events.USER_DISCONNECT, userDisconnected);
 			}
 		});
 	}
-	
+
 	/**
 	 * Implementation of Subject interface method.
 	 * @param event String representing event type.

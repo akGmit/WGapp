@@ -56,6 +56,7 @@ public class User implements Sendable{
 	}
 
 	public void setName(String name) {
+		userData.put("name", name);
 		this.name = name;
 	}
 
@@ -64,6 +65,7 @@ public class User implements Sendable{
 	}
 
 	public void setWorkGroup(String workGroup) {
+		userData.put("workGroup", workGroup);
 		this.workGroup = workGroup;
 	}
 
@@ -80,6 +82,7 @@ public class User implements Sendable{
 	}
 
 	public void setPassword(String password) {
+		userData.put("password", password);
 		this.password = password;
 	}
 
@@ -88,6 +91,7 @@ public class User implements Sendable{
 	}
 
 	public void setSocketID(String socketID) {
+		userData.put("socketID", socketID);
 		this.socketID = socketID;
 	}
 
