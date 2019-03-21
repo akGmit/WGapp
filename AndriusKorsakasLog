@@ -65,11 +65,20 @@ Week notes:
 
 Week ending 03/03
 Tasks:
-    1. Implement user registration:
+    1. Implement user registration:                                                             DONE
             -set up MongoDB for user data storage
             -set up server side user reg functionality
             -set up client side user reg func and validation
-    2. Abstract Observer method implementation from MainViewController to improve readability
-    3. Create special class to hold static event values.         
+    2. Abstract Observer method implementation from MainViewController to improve readability   DONE
+    3. Create special class to hold static event values.                                        DONE
+
+Week notes:
+    
+=======
+
+Week ending 23/03
+Tasks:
+    1. Implement leave group server/client functionality.
+    2. Testing of GUI.
 
 

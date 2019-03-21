@@ -40,7 +40,6 @@ import wgapp.inter.Observer;
  * Using this controller instance app is providing UI functionality.
  * 
  * @author ak
- *
  */
 public class MainViewController extends AbstractController implements Initializable, Observer{
 
@@ -71,6 +70,7 @@ public class MainViewController extends AbstractController implements Initializa
 	private Thread connectionThread;
 	private Thread outputThread;
 	private boolean isUserValid = false;
+	private EventManager eventManager = new EventManager(this);
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -81,7 +81,7 @@ public class MainViewController extends AbstractController implements Initializa
 		initMainAppEvents();
 	}
 	//Validate client 
-	private void validateClient() {
+	void validateClient() {
 		if(!isUserValid) {
 			workGroupTable.setDisable(true);
 			lblMainUI.setText("Login or create new user to access work groups.");
@@ -130,6 +130,7 @@ public class MainViewController extends AbstractController implements Initializa
 		this.connection = new ConnectionSocket();
 
 		this.connection.addObserver(this);
+		this.connection.addObserver(eventManager);
 
 		ConnectionSocket.connect();
 
@@ -162,7 +163,7 @@ public class MainViewController extends AbstractController implements Initializa
 	 */
 	@Override
 	public void update(String event, Object obj) {
-		if(event.equalsIgnoreCase(Events.WORKGROUP_LIST)) {
+		/*if(event.equalsIgnoreCase(Events.WORKGROUP_LIST)) {
 			Platform.runLater( new Runnable() {
 				public void run() {
 					ArrayList<String> workGroupList = (ArrayList<String>) obj;
@@ -176,9 +177,9 @@ public class MainViewController extends AbstractController implements Initializa
 					workGroupTable.setItems(tblWorkGroupList);
 				}
 			});
-		}
+		}*/
 
-		if(event.equalsIgnoreCase(Events.USER_JOIN)) {
+		/*if(event.equalsIgnoreCase(Events.USER_JOIN)) {
 			ArrayList<User> newUserList = (ArrayList<User>) obj;
 			ArrayList<String> userNameList = new ArrayList<>();
 			for(User u : newUserList) {
@@ -194,8 +195,8 @@ public class MainViewController extends AbstractController implements Initializa
 			createGroupMenu.setDisable(true);
 			leaveGroupMenu.setDisable(false);
 		}
-
-		if(event.equalsIgnoreCase(Events.LOG_IN)) {
+*/
+		/*if(event.equalsIgnoreCase(Events.LOG_IN)) {
 			boolean isValid = (Boolean) obj;
 			if(isValid) {
 				Platform.runLater(new Runnable() {
@@ -215,9 +216,9 @@ public class MainViewController extends AbstractController implements Initializa
 			}else {
 				validateClient();
 			}
-		}
+		}*/
 
-		if(event.equalsIgnoreCase(Events.NEW_USER)) {
+		/*if(event.equalsIgnoreCase(Events.NEW_USER)) {
 			boolean isValid = (Boolean) obj;
 			if(isValid) {
 				Platform.runLater(new Runnable() {
@@ -237,14 +238,14 @@ public class MainViewController extends AbstractController implements Initializa
 			}else {
 				validateClient();
 			}
-		}
+		}*/
 
 
-		if(event.equalsIgnoreCase(Socket.EVENT_MESSAGE)) {
+		/*if(event.equalsIgnoreCase(Socket.EVENT_MESSAGE)) {
 			txtaChatDisplay.appendText((String)obj+"\n");
-		}
+		}*/
 
-		if(event.equalsIgnoreCase(Events.USER_DISCONNECT)) {
+		/*if(event.equalsIgnoreCase(Events.USER_DISCONNECT)) {
 			User userDisconnected = (User) obj;
 			Platform.runLater(new Runnable() {
 
@@ -254,9 +255,9 @@ public class MainViewController extends AbstractController implements Initializa
 					lstvUsers.setItems(groupUserList);
 				}
 			});
-		}
+		}*/
 
-		if(event.equalsIgnoreCase(Events.ERROR_MSG)) {
+		/*if(event.equalsIgnoreCase(Events.ERROR_MSG)) {
 			Platform.runLater(new Runnable() {
 
 				@Override
@@ -266,11 +267,11 @@ public class MainViewController extends AbstractController implements Initializa
 				}
 			});
 
-		}
+		}*/
 	}
 
 	//Show main start UI	
-	private void showMainStartUI() {
+	void showMainStartUI() {
 		mainBox.getChildren().remove(mainWGTabPane);
 		if(!mainBox.getChildren().contains(lblMainUI) && !mainBox.getChildren().contains(workGroupTable)) {
 			mainBox.getChildren().add(lblMainUI);
@@ -278,7 +279,7 @@ public class MainViewController extends AbstractController implements Initializa
 		}
 	}
 	//Show main group chat UI and disable create group menu button
-	private void showMainGroupUI() {
+	void showMainGroupUI() {
 		mainBox.getChildren().remove(lblMainUI);
 		mainBox.getChildren().remove(workGroupTable);
 		createGroupMenu.setDisable(true);
@@ -294,7 +295,7 @@ public class MainViewController extends AbstractController implements Initializa
 	}
 
 	//POPUP WINDOW METHODS ======================================
-
+	
 	public void showLoginPopUp() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("LogInPopUp.fxml"));
@@ -339,7 +340,164 @@ public class MainViewController extends AbstractController implements Initializa
 		}
 	}
 
-
+	
+	//GETTERS SETTERS
+	public VBox getMainBox() {
+		return mainBox;
+	}
+	public void setMainBox(VBox mainBox) {
+		this.mainBox = mainBox;
+	}
+	public TextField getUserName() {
+		return userName;
+	}
+	public void setUserName(TextField userName) {
+		this.userName = userName;
+	}
+	public TextField getWorkGroupName() {
+		return workGroupName;
+	}
+	public void setWorkGroupName(TextField workGroupName) {
+		this.workGroupName = workGroupName;
+	}
+	public MenuItem getCreteUserMenu() {
+		return creteUserMenu;
+	}
+	public void setCreteUserMenu(MenuItem creteUserMenu) {
+		this.creteUserMenu = creteUserMenu;
+	}
+	public TableView<WorkGroupListRow> getWorkGroupTable() {
+		return workGroupTable;
+	}
+	public void setWorkGroupTable(TableView<WorkGroupListRow> workGroupTable) {
+		this.workGroupTable = workGroupTable;
+	}
+	public TableColumn<WorkGroupListRow, String> getTblColWorkGroupName() {
+		return tblColWorkGroupName;
+	}
+	public void setTblColWorkGroupName(TableColumn<WorkGroupListRow, String> tblColWorkGroupName) {
+		this.tblColWorkGroupName = tblColWorkGroupName;
+	}
+	public TableColumn<WorkGroupListRow, Button> getTblColBtnJoinWorkGroup() {
+		return tblColBtnJoinWorkGroup;
+	}
+	public void setTblColBtnJoinWorkGroup(TableColumn<WorkGroupListRow, Button> tblColBtnJoinWorkGroup) {
+		this.tblColBtnJoinWorkGroup = tblColBtnJoinWorkGroup;
+	}
+	public TabPane getMainWGTabPane() {
+		return mainWGTabPane;
+	}
+	public void setMainWGTabPane(TabPane mainWGTabPane) {
+		this.mainWGTabPane = mainWGTabPane;
+	}
+	public Tab getTabChat() {
+		return tabChat;
+	}
+	public void setTabChat(Tab tabChat) {
+		this.tabChat = tabChat;
+	}
+	public ListView<String> getLstvUsers() {
+		return lstvUsers;
+	}
+	public void setLstvUsers(ListView<String> lstvUsers) {
+		this.lstvUsers = lstvUsers;
+	}
+	public TextField getTxtfMessage() {
+		return txtfMessage;
+	}
+	public void setTxtfMessage(TextField txtfMessage) {
+		this.txtfMessage = txtfMessage;
+	}
+	public Label getLblMainUI() {
+		return lblMainUI;
+	}
+	public void setLblMainUI(Label lblMainUI) {
+		this.lblMainUI = lblMainUI;
+	}
+	public TextArea getTxtaChatDisplay() {
+		return txtaChatDisplay;
+	}
+	public void setTxtaChatDisplay(TextArea txtaChatDisplay) {
+		this.txtaChatDisplay = txtaChatDisplay;
+	}
+	public Button getBtnSendMsg() {
+		return btnSendMsg;
+	}
+	public void setBtnSendMsg(Button btnSendMsg) {
+		this.btnSendMsg = btnSendMsg;
+	}
+	public MenuItem getCreateGroupMenu() {
+		return createGroupMenu;
+	}
+	public void setCreateGroupMenu(MenuItem createGroupMenu) {
+		this.createGroupMenu = createGroupMenu;
+	}
+	public MenuItem getLeaveGroupMenu() {
+		return leaveGroupMenu;
+	}
+	public void setLeaveGroupMenu(MenuItem leaveGroupMenu) {
+		this.leaveGroupMenu = leaveGroupMenu;
+	}
+	public MenuItem getLoginMenu() {
+		return loginMenu;
+	}
+	public void setLoginMenu(MenuItem loginMenu) {
+		this.loginMenu = loginMenu;
+	}
+	public ObservableList<WorkGroupListRow> getTblWorkGroupList() {
+		return tblWorkGroupList;
+	}
+	public void setTblWorkGroupList(ObservableList<WorkGroupListRow> tblWorkGroupList) {
+		this.tblWorkGroupList = tblWorkGroupList;
+	}
+	public ObservableList<String> getGroupUserList() {
+		return groupUserList;
+	}
+	public void setGroupUserList(ObservableList<String> groupUserList) {
+		this.groupUserList = groupUserList;
+	}
+	public ConnectionSocket getConnection() {
+		return connection;
+	}
+	public void setConnection(ConnectionSocket connection) {
+		this.connection = connection;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public ConnectionOutput getOut() {
+		return out;
+	}
+	public void setOut(ConnectionOutput out) {
+		this.out = out;
+	}
+	public PopUpController getPopupController() {
+		return popupController;
+	}
+	public void setPopupController(PopUpController popupController) {
+		this.popupController = popupController;
+	}
+	public Thread getConnectionThread() {
+		return connectionThread;
+	}
+	public void setConnectionThread(Thread connectionThread) {
+		this.connectionThread = connectionThread;
+	}
+	public Thread getOutputThread() {
+		return outputThread;
+	}
+	public void setOutputThread(Thread outputThread) {
+		this.outputThread = outputThread;
+	}
+	public boolean isUserValid() {
+		return isUserValid;
+	}
+	public void setUserValid(boolean isUserValid) {
+		this.isUserValid = isUserValid;
+	}
 
 	/**
 	 * Inner class JoinButton extending Button.
