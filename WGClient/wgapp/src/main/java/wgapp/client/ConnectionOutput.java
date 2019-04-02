@@ -61,4 +61,8 @@ public class ConnectionOutput implements Runnable{
 	public void getWorkGroupList() {
 		this.socket.emit(Events.WORKGROUP_LIST);
 	}
+
+	public void leaveGroup() {
+		this.socket.emit("leave_group");
+	}
 }

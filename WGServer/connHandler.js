@@ -115,7 +115,7 @@ module.exports = function(io, socket){
 	//#endregion
 	socket.on('join_group', function (user) {
 		let usr = JSON.parse(user);
-		
+		console.log(usr);
 		if (workGroups.has(usr.workGroup)) {
 			let client = new Client(usr.name, usr.workGroup, false, usr.password, socket.id);
 			if (workGroups.get(client.workGroup).password === client.password) {
@@ -138,6 +138,23 @@ module.exports = function(io, socket){
 			io.to(socket.id).emit("error_msg", JSON.stringify("Group doesnt exists!"));
 			return;
 		}
+	});
+
+	/**
+	 * Event - "leave_group". Deals with event sent from client which requests client to leave group.
+	 * 
+	 */
+	socket.on('leave_group', function(){
+		console.log(sessionUser.name);
+		if (sessionUser.workGroup !== undefined) {
+			workGroups.get(sessionUser.workGroup).users = workGroups.get(sessionUser.workGroup).users.filter(user => {
+				return user.name !== sessionUser.name;
+			});
+		}
+		let msg = sessionUser.name + " has left the group.";
+		socket.to(sessionUser.workGroup).broadcast.emit("user_disconnect", JSON.stringify(sessionUser));
+		socket.to(sessionUser.workGroup).broadcast.emit("message", msg);
+		sessionUser.workGroup = undefined;
 	});
 	
 	/**

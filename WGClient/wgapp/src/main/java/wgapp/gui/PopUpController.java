@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import wgapp.client.Events;
+import wgapp.client.User;
 /**
  * Pop up window controller class.
  * 
@@ -96,6 +97,8 @@ public class PopUpController extends AbstractController implements Initializable
 
 		if(type.equalsIgnoreCase(Events.JOIN_WORKGROUP)) {
 			btnOK.setOnAction((event) -> {
+				String name = User.getUser().getName();
+				result.put("name", name);
 				result.put("password", password.getText());
 				closeStage();
 			});

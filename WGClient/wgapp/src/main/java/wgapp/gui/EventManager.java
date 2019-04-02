@@ -56,7 +56,7 @@ public class EventManager implements Observer {
 			break;
 		}
 	}
-
+	
 	private void eventErrorMsg(Object obj) {
 		Platform.runLater(new Runnable() {
 

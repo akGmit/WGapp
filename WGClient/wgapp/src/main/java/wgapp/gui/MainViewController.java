@@ -154,7 +154,8 @@ public class MainViewController extends AbstractController implements Initializa
 	}
 	
 	public void groupLeave() {
-		
+		out.leaveGroup();
+		showMainStartUI();
 	}
 
 	/**

@@ -13,5 +13,5 @@ public final class Events {
 	public static final String CREATE_USER = "create_user";
 	public static final String CREATE_GROUP = "create_group";
 	public static final String JOIN_WORKGROUP = "join_workgroup";
-	
+	public static final String LEAVE_GROUP = "leave_group";
 }
