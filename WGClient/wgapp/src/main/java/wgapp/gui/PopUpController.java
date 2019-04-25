@@ -67,41 +67,24 @@ public class PopUpController extends AbstractController implements Initializable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		if(type.equalsIgnoreCase(Events.LOG_IN)) {
-			btnOK.setOnAction((event) -> {
-				result.put("name", userName.getText());
-				result.put("password", password.getText());
-				closeStage();
-			});
-		}
-
-		if(type.equalsIgnoreCase(Events.CREATE_USER)) {
-			btnOK.setOnAction((event) -> {
-				result.put("name", userName.getText());
-				result.put("password", password.getText());
-				closeStage();
-			});
-		}
-
-		if(type.equalsIgnoreCase(Events.NEW_GROUP)) {
-			btnOK.setOnAction((event) -> {
-				createWorkGroup();
-				closeStage();
-			});
-		}
-
-		if(type.equalsIgnoreCase(Events.JOIN_WORKGROUP)) {
-			btnOK.setOnAction((event) -> {
-				String name = User.getUser().getName();
-				result.put("name", name);
-				result.put("password", password.getText());
-				closeStage();
-			});
+		
+		switch(type) {
+		case Events.LOG_IN:
+			btnOK.setOnAction((event) -> { logIn(); });
+			break;
+		case Events.CREATE_USER:
+			btnOK.setOnAction((event) -> { createUser(); });
+			break;
+		case Events.NEW_GROUP:
+			btnOK.setOnAction((event) -> { createWorkGroup(); });
+			break;
+		case Events.JOIN_WORKGROUP:
+			btnOK.setOnAction((event) -> { joinWorkGroup(); });
+			break;
 		}
 		
 		btnCancel.setOnAction((event) -> {
@@ -109,10 +92,30 @@ public class PopUpController extends AbstractController implements Initializable
 			closeStage();
 		});
 	}
+	
+	private void joinWorkGroup() {
+		String name = User.getUser().getName();
+		result.put("name", name);
+		result.put("password", password.getText());
+		closeStage();
+	}
+	
+	private void createUser() {
+		result.put("name", userName.getText());
+		result.put("password", password.getText());
+		closeStage();
+	}
+	
+	private void logIn() {
+		result.put("name", userName.getText());
+		result.put("password", password.getText());
+		closeStage();
+	}
 
 	private void createWorkGroup() {
 		result.put("workGroup", wgName.getText());
 		result.put("password", password.getText());
+		closeStage();
 	}
 
 	public Map<String, String> getResult() {
