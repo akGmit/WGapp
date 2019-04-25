@@ -1,11 +1,11 @@
-package wgapp;
+package wgapp.client.tests;
+
+
 
 import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import wgapp.client.ConnectionOutput;
 import wgapp.client.ConnectionSocket;
 import wgapp.client.User;
@@ -22,9 +22,10 @@ public class ConnectionOutputTests implements Observer{
 	
 	@BeforeClass
 	public static void initialize() {
-		s.connect();
+		ConnectionSocket.connect();
+		
 		t = new Thread(s);
-		t.run();
+		t.start();
 	}
 	
 	@Before
