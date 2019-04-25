@@ -3,7 +3,7 @@ let app = require('express')();
 let server = require('http').Server(app);
 let io = require('socket.io')(server);
 let connectionHandler = require('./connHandler');
-let java = require('java');
+//let java = require('java');
 //#region java import test
 /**java.classpath.push("./ftplet-api-1.1.1.jar");
 java.classpath.push("./ftpserver-core-1.1.1.jar");

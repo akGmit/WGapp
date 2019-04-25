@@ -30,7 +30,11 @@ public class User implements Sendable{
 	}
 
 	public void setUser(String name, String workGroup, Boolean isAdmin, String password, String socketID) {
-		this.setUser(name, workGroup, isAdmin, password, socketID);
+		this.name = name;
+		this.workGroup = workGroup;
+		this.isAdmin = isAdmin;
+		this.password = password;
+		this.socketID = socketID;
 	}
 
 	public static User getUser() {
