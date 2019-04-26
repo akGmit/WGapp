@@ -6,7 +6,9 @@ let UserModel = require("./userDbModel");
 module.exports = function(io, socket){
 	let sessionUser = new Client();
 	console.log("Client connected");
-	
+	workGroups.set("Group1", null);
+		workGroups.set("Group2", null);
+		workGroups.set("Group3", null);
 	//On user log in
 	socket.on("log_in", (usr) => {
 		let user = JSON.parse(usr);
@@ -132,11 +134,9 @@ module.exports = function(io, socket){
 
 			} else {
 				io.to(socket.id).emit("error_msg", JSON.stringify("Wrong work group password!"));
-				return;
 			}
 		} else {
 			io.to(socket.id).emit("error_msg", JSON.stringify("Group doesnt exists!"));
-			return;
 		}
 	});
 
@@ -154,6 +154,7 @@ module.exports = function(io, socket){
 		let msg = sessionUser.name + " has left the group.";
 		socket.to(sessionUser.workGroup).broadcast.emit("user_disconnect", JSON.stringify(sessionUser));
 		socket.to(sessionUser.workGroup).broadcast.emit("message", msg);
+		io.to(socket.id).emit("leave_group", true);
 		sessionUser.workGroup = undefined;
 	});
 	
@@ -169,7 +170,8 @@ module.exports = function(io, socket){
 	 * Event - "disconnect", user exiting group event.
 	 */
 	socket.on("disconnect", function () {
-		console.log(sessionUser.workGroup);
+		io.to(socket.id).emit("disconnect", true);
+		//console.log(sessionUser.workGroup);
 		if (sessionUser.workGroup !== undefined) {
 			workGroups.get(sessionUser.workGroup).users = workGroups.get(sessionUser.workGroup).users.filter(user => {
 				return user.name !== sessionUser.name;
@@ -183,9 +185,9 @@ module.exports = function(io, socket){
 	 * Event - "get_workgroup_list". Returns list of all work groups of server.
 	 */
 	socket.on("workgroup_list", function () {
-		workGroups.set("Group1", null);
-		workGroups.set("Group2", null);
-		workGroups.set("Group3", null);
+		// workGroups.set("Group1", null);
+		// workGroups.set("Group2", null);
+		// workGroups.set("Group3", null);
 		let workGroupList = Array.from(workGroups.keys());
 		console.log(JSON.stringify(workGroupList));
 		io.to(socket.id).emit("workgroup_list", JSON.stringify(workGroupList));
