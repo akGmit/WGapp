@@ -27,7 +27,6 @@ import wgapp.client.ConnectionOutput;
 import wgapp.client.ConnectionSocket;
 import wgapp.client.Events;
 import wgapp.client.User;
-import wgapp.inter.Observer;
 /**
  * Main UI controller of an application.
  * Using this controller instance app is providing UI functionality.
@@ -39,7 +38,7 @@ public class MainViewController extends AbstractController implements Initializa
 	@FXML private VBox mainBox;
 	@FXML private TextField userName;
 	@FXML private TextField workGroupName;
-	@FXML private MenuItem creteUserMenu;
+	@FXML private MenuItem createUserMenu;
 	@FXML private TableView<WorkGroupListRow> workGroupTable;
 	@FXML private TableColumn<WorkGroupListRow, String> tblColWorkGroupName;
 	@FXML private TableColumn<WorkGroupListRow, Button> tblColBtnJoinWorkGroup;
@@ -147,7 +146,12 @@ public class MainViewController extends AbstractController implements Initializa
 	
 	public void groupLeave() {
 		out.leaveGroup();
+		System.out.println(user.toJSON());
 		txtaChatDisplay.clear();
+		user.setWorkGroup("");
+		createGroupMenu.setDisable(false);
+		leaveGroupMenu.setDisable(true);
+		createUserMenu.setDisable(false);
 		showMainStartUI();
 	}
 
@@ -164,13 +168,16 @@ public class MainViewController extends AbstractController implements Initializa
 		mainBox.getChildren().remove(lblMainUI);
 		mainBox.getChildren().remove(workGroupTable);
 		createGroupMenu.setDisable(true);
+		createUserMenu.setDisable(true);
 		if(!mainBox.getChildren().contains(mainWGTabPane)) {
 			mainBox.getChildren().add(mainWGTabPane);
+			
 		}
 	}
 
 	private void setUser(Map<String, String> u) {
 		if(u != null) {
+			System.out.println(user.toJSON());
 			User.getUser().setUserData(u);
 		}
 	}
@@ -185,6 +192,7 @@ public class MainViewController extends AbstractController implements Initializa
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
 			out.logIn(this.user);
+			System.out.println(user.toJSON());
 		}
 	}
 
@@ -196,6 +204,7 @@ public class MainViewController extends AbstractController implements Initializa
 			setUser(popupController.getResult());
 			out.createGroup(this.user);
 			showMainGroupUI();
+			System.out.println(user.toJSON());
 		}
 	}
 
@@ -207,7 +216,9 @@ public class MainViewController extends AbstractController implements Initializa
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
 			out.createNewUser(this.user);
+			System.out.println(user.toJSON());
 		}
+		
 	}
 
 	private void showEnterWGPasswordPop() {
@@ -218,6 +229,7 @@ public class MainViewController extends AbstractController implements Initializa
 		if(popupController.getResult() != null) {
 			setUser(popupController.getResult());
 			showMainGroupUI();
+			System.out.println(user.toJSON());
 		}
 	}
 
@@ -241,11 +253,11 @@ public class MainViewController extends AbstractController implements Initializa
 	public void setWorkGroupName(TextField workGroupName) {
 		this.workGroupName = workGroupName;
 	}
-	public MenuItem getCreteUserMenu() {
-		return creteUserMenu;
+	public MenuItem getCreateUserMenu() {
+		return createUserMenu;
 	}
 	public void setCreteUserMenu(MenuItem creteUserMenu) {
-		this.creteUserMenu = creteUserMenu;
+		this.createUserMenu = creteUserMenu;
 	}
 	public TableView<WorkGroupListRow> getWorkGroupTable() {
 		return workGroupTable;

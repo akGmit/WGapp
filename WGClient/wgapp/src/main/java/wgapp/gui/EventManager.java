@@ -144,6 +144,7 @@ public class EventManager implements Observer {
 		}else {
 			view.validateClient();
 		}
+		
 	}
 
 	private void eventWorkGroupList(Object obj) {

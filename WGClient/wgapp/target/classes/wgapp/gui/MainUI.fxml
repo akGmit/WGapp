@@ -110,7 +110,6 @@
 						</VBox>
 					</content>
 				</Tab>
-				<Tab text="Untitled Tab 2" />
 			</tabs>
 		</TabPane>
 	</children>
