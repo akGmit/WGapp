@@ -1,12 +1,9 @@
 package wgapp.gui;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import io.socket.client.Socket;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,10 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -27,7 +21,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import wgapp.client.ConnectionOutput;
@@ -41,7 +34,7 @@ import wgapp.inter.Observer;
  * 
  * @author ak
  */
-public class MainViewController extends AbstractController implements Initializable, Observer{
+public class MainViewController extends AbstractController implements Initializable{
 
 	@FXML private VBox mainBox;
 	@FXML private TextField userName;
@@ -129,7 +122,6 @@ public class MainViewController extends AbstractController implements Initializa
 	private void initConnection() {
 		this.connection = new ConnectionSocket();
 
-		this.connection.addObserver(this);
 		this.connection.addObserver(eventManager);
 
 		ConnectionSocket.connect();
@@ -155,120 +147,8 @@ public class MainViewController extends AbstractController implements Initializa
 	
 	public void groupLeave() {
 		out.leaveGroup();
+		txtaChatDisplay.clear();
 		showMainStartUI();
-	}
-
-	/**
-	 * Observer interface update() method implementation.
-	 * 
-	 */
-	@Override
-	public void update(String event, Object obj) {
-		/*if(event.equalsIgnoreCase(Events.WORKGROUP_LIST)) {
-			Platform.runLater( new Runnable() {
-				public void run() {
-					ArrayList<String> workGroupList = (ArrayList<String>) obj;
-					tblWorkGroupList.clear();
-					for (String s : workGroupList) {
-						tblWorkGroupList.add(new WorkGroupListRow(s));
-					}
-					tblColWorkGroupName.setCellValueFactory(new PropertyValueFactory<>("name"));
-					tblColBtnJoinWorkGroup.setCellValueFactory(new PropertyValueFactory<>("joinButton"));
-					workGroupTable.getColumns().setAll(tblColWorkGroupName, tblColBtnJoinWorkGroup);
-					workGroupTable.setItems(tblWorkGroupList);
-				}
-			});
-		}*/
-
-		/*if(event.equalsIgnoreCase(Events.USER_JOIN)) {
-			ArrayList<User> newUserList = (ArrayList<User>) obj;
-			ArrayList<String> userNameList = new ArrayList<>();
-			for(User u : newUserList) {
-				userNameList.add(u.getName());
-			}
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					groupUserList.setAll(userNameList);
-					lstvUsers.setItems(groupUserList);
-				}
-			});
-			createGroupMenu.setDisable(true);
-			leaveGroupMenu.setDisable(false);
-		}
-*/
-		/*if(event.equalsIgnoreCase(Events.LOG_IN)) {
-			boolean isValid = (Boolean) obj;
-			if(isValid) {
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						new Alert(AlertType.INFORMATION, "Log in succesful!", ButtonType.OK).showAndWait();
-						workGroupTable.setDisable(false);
-						lblMainUI.setText("Available work groups list:");
-					}
-				});
-				isUserValid = true;
-				createGroupMenu.setDisable(false);
-				loginMenu.setDisable(true);
-				this.user.setPassword("");
-				showMainStartUI();
-			}else {
-				validateClient();
-			}
-		}*/
-
-		/*if(event.equalsIgnoreCase(Events.NEW_USER)) {
-			boolean isValid = (Boolean) obj;
-			if(isValid) {
-				Platform.runLater(new Runnable() {
-
-					@Override
-					public void run() {
-						new Alert(AlertType.INFORMATION, "User account created.", ButtonType.OK).showAndWait();
-						workGroupTable.setDisable(false);
-						lblMainUI.setText("Available work groups list:");
-					}
-				});
-				isUserValid = true;
-				createGroupMenu.setDisable(false);
-				loginMenu.setDisable(true);
-				this.user.setPassword("");
-				showMainStartUI();
-			}else {
-				validateClient();
-			}
-		}*/
-
-
-		/*if(event.equalsIgnoreCase(Socket.EVENT_MESSAGE)) {
-			txtaChatDisplay.appendText((String)obj+"\n");
-		}*/
-
-		/*if(event.equalsIgnoreCase(Events.USER_DISCONNECT)) {
-			User userDisconnected = (User) obj;
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					groupUserList.remove(userDisconnected.getName());
-					lstvUsers.setItems(groupUserList);
-				}
-			});
-		}*/
-
-		/*if(event.equalsIgnoreCase(Events.ERROR_MSG)) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					new Alert(AlertType.ERROR, (String)obj, ButtonType.OK).showAndWait();
-					showMainStartUI();
-				}
-			});
-
-		}*/
 	}
 
 	//Show main start UI	

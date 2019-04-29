@@ -11,10 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
@@ -38,11 +35,11 @@ public class PopUpController extends AbstractController implements Initializable
 	private Map<String, String> result = new HashMap<>();
 	private Stage popUp = null;
 	private String type;
-	private AbstractController c;
+	//private AbstractController c;
 
 	public PopUpController(AbstractController c, FXMLLoader loader, String type) {
 		this.type = type;
-		this.c = c;
+		//this.c = c;
 
 		loader.setController(this);
 		Parent layout;

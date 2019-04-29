@@ -103,6 +103,7 @@ public class EventManager implements Observer {
 	}
 
 	private void eventUserJoin(Object obj) {
+		@SuppressWarnings("unchecked")
 		ArrayList<User> newUserList = (ArrayList<User>) obj;
 		ArrayList<String> userNameList = new ArrayList<>();
 		for(User u : newUserList) {
@@ -147,6 +148,7 @@ public class EventManager implements Observer {
 
 	private void eventWorkGroupList(Object obj) {
 		Platform.runLater( new Runnable() {
+			@SuppressWarnings("unchecked")
 			public void run() {
 				ArrayList<String> workGroupList = (ArrayList<String>) obj;
 				view.getTblWorkGroupList().clear();
