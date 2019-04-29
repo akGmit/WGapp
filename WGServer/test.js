@@ -106,13 +106,16 @@ describe('server functions', function () {
     })
 
     it("should leave group", (done) => {
+       
         client.emit('leave_group');
-        client.on('leave_group', (res) => {
+        client.on('leave', (res)=>{
             expect(res).toBe(true);
-            //expect.anything();
             client.off();
             done();
-        })
+        }
+        )
+            
+            
     })
 
     it("should disconnect", (done) => {

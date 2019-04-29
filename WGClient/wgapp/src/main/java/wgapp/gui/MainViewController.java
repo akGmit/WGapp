@@ -406,8 +406,9 @@ public class MainViewController extends AbstractController implements Initializa
 			this.groupName = group;
 			setText("Join");
 			setOnAction((event) -> {
-				showEnterWGPasswordPop();
-				user.setWorkGroup(groupName);
+                user.setWorkGroup(groupName);				
+                showEnterWGPasswordPop();
+				
 				out.joinGroup(user);
 			});
 		}

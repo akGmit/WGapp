@@ -26,14 +26,17 @@ module.exports = class Server{
 
 	stop(){
 		
-		//close remote sockets
+		io.httpServer.close();
 		socketlist.forEach(function(socket) {        
 			socket.disconnect(true);                      
-		});    
-		
+		});   
+		//close remote sockets
 		server.close(()=>{
-			process.exit(0);
+			
 		});
+		// server.close(()=>{
+		// 	process.exit(0);
+		// });
 	}
 
 }

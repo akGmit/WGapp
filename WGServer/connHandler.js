@@ -151,6 +151,7 @@ module.exports = function(io, socket){
 			});
 		}
 		socket.leave(sessionUser.workGroup);
+		io.to(socket.id).emit("leave", true);
 		let msg = sessionUser.name + " has left the group.";
 		socket.to(sessionUser.workGroup).broadcast.emit("user_disconnect", JSON.stringify(sessionUser));
 		socket.to(sessionUser.workGroup).broadcast.emit("message", msg);
