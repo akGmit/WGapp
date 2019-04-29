@@ -1,15 +1,23 @@
-const socket = require('./serverMain');
-let app = require('express')();
-let server = require('http').Server(app);
-let io = require('socket.io')(server);
+let Server = require('./serverMain');
 var ioc = require('socket.io-client');
 let Client = require("./Client");
+
+let s = new Server();
 
 let user = new Client('1', '1', false, '1', '');
 let client = ioc('ws://localhost:' + 31337);
 
+beforeAll(() =>{
+    s.start();
+})
+
+
+afterAll(() => {
+    s.stop();
+  });
 
 describe('server functions', function () {
+    
     it("should be succesfull login", (done) => {
         client.emit('log_in', JSON.stringify(user));
         client.on('log_in', (res) => {
@@ -111,5 +119,7 @@ describe('server functions', function () {
         client.disconnect();
         expect(client.connected).toEqual(false);
         done();
+       
     })
+    
 });

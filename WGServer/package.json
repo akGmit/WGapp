@@ -2,7 +2,8 @@
   "name": "wgserver",
   "version": "1.0.0",
   "description": "WorkGroupApp server",
-  "main": "serverMain.js",
+  "main": "main.js",
+  "bin":"bin.js",
   "scripts": {
     "test": "jest"
   },
